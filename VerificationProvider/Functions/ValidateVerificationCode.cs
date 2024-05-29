@@ -2,22 +2,15 @@ using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.Azure.Functions.Worker;
 using Microsoft.Extensions.Logging;
-using VerificationProvider.Data.Contexts;
 using VerificationProvider.Services;
 
 namespace VerificationProvider.Functions;
 
-public class ValidateVerificationCode
+public class ValidateVerificationCode(ILogger<ValidateVerificationCode> logger, IValidateVerificationCodeService validateVerificationCodeService)
 {
-    private readonly ILogger<ValidateVerificationCode> _logger;
-    private readonly IValidateVerificationCodeService _validateVerificationCodeService;
+    private readonly ILogger<ValidateVerificationCode> _logger = logger;
+    private readonly IValidateVerificationCodeService _validateVerificationCodeService = validateVerificationCodeService;
 
-
-    public ValidateVerificationCode(ILogger<ValidateVerificationCode> logger, IValidateVerificationCodeService validateVerificationCodeService, DataContext context)
-    {
-        _logger = logger;
-        _validateVerificationCodeService = validateVerificationCodeService;
-    }
 
 
     [Function("ValidateVerificationCode")]
