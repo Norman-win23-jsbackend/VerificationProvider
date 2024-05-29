@@ -5,31 +5,31 @@ using VerificationProvider.Services;
 
 namespace VerificationProvider.Functions;
 
-public class GenerateVerificationCode(ILogger<GenerateVerificationCode> logger, IVerificationService verificationServicd)
+public class GenerateVerificationCode(ILogger<GenerateVerificationCode> logger, IVerificationService verificationService)
 {
     private readonly ILogger<GenerateVerificationCode> _logger = logger;
-    private readonly IVerificationService _verificationServicd = verificationServicd;
+    private readonly IVerificationService _verificationService = verificationService;
 
 
     [Function(nameof(GenerateVerificationCode))]
-    [ServiceBusOutput("email-request", Connection = "ServiceBusConnection")]
+    [ServiceBusOutput("email_request", Connection = "ServiceBusConnection")]
     public async Task<string> Run([ServiceBusTrigger("verification_request", Connection = "ServiceBusConnection")] ServiceBusReceivedMessage message, ServiceBusMessageActions messageActions)
     {
         try
         {
-            var verificationRequest = _verificationServicd.UnpackVerificationRequest(message);
+            var verificationRequest = _verificationService.UnpackVerificationRequest(message);
             if (verificationRequest != null)
             {
-                var code = _verificationServicd.GenerateCode();
+                var code = _verificationService.GenerateCode();
                 if (!string.IsNullOrEmpty(code))
                 {
-                    var result = await _verificationServicd.SaveVerificationRequest(verificationRequest, code);
+                    var result = await _verificationService.SaveVerificationRequest(verificationRequest, code);
                     if (result)
                     {
-                        var emailRequest = _verificationServicd.GenerateEmailRequest(verificationRequest, code);
+                        var emailRequest = _verificationService.GenerateEmailRequest(verificationRequest, code);
                         if (emailRequest != null)
                         {
-                            var payload = _verificationServicd.GenerateServiceBusEmailRequest(emailRequest);
+                            var payload = _verificationService.GenerateServiceBusEmailRequest(emailRequest);
                             if (!string.IsNullOrEmpty(payload))
                             {
                                 await messageActions.CompleteMessageAsync(message);

@@ -24,6 +24,8 @@ var host = new HostBuilder()
     .Build();
 
 
+
+//for update-database
 using (var scope = host.Services.CreateScope())
 {
     try

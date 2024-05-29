@@ -14,7 +14,6 @@ public class VerificationService(ILogger<VerificationService> logger, IServicePr
     private readonly IServiceProvider _serviceProvider = serviceProvider;
 
 
-
     public VerificationRequest UnpackVerificationRequest(ServiceBusReceivedMessage message)
     {
         try
@@ -29,8 +28,10 @@ public class VerificationService(ILogger<VerificationService> logger, IServicePr
         {
             _logger.LogError($"ERROR : GenerateVerificationCode.UnpackVerificationRequest() :: {ex.Message}");
         }
-        return null;
+        return null!;
     }
+
+
 
     public string GenerateCode()
     {
@@ -48,6 +49,8 @@ public class VerificationService(ILogger<VerificationService> logger, IServicePr
 
         return null!;
     }
+
+
 
     public async Task<bool> SaveVerificationRequest(VerificationRequest verificationRequest, string code)
     {
@@ -79,6 +82,8 @@ public class VerificationService(ILogger<VerificationService> logger, IServicePr
         return false;
     }
 
+
+
     public EmailRequest GenerateEmailRequest(VerificationRequest verificationRequest, string code)
     {
         try
@@ -90,35 +95,33 @@ public class VerificationService(ILogger<VerificationService> logger, IServicePr
                     To = verificationRequest.Email,
                     Subject = $"Verification Code {code}",
                     HtmlBody = $@"
-                            <html lang='en'>
-                            <head>
-                                <meta charset='UTF-8'>
-                                <meta name='viewport' content='width=device-width, initial-scale=1.0'>
-                                <title>Verification Code</title>
-                            </head>
-                            <body>
-                                <div style='color: #191919; max-width: 500px;'>
-                                    <div style='background-color: #4F85F6; color: white; text-align: center; padding: 20px 0;'>
-                                        <h1 style='font-weight: 600;'>Verification Code</h1>
-                                    </div>
-                                    <div style='background-color: #F0F0F0; padding: 1rem 2rem;'>
-                                        <p>Dear user,</p>
-                                        <p>We received a request to sign in to your account using e-mail {verificationRequest.Email}.</p>
-                                        <p class='code' style='font-weight: 700; text-align: center; font-size: 48px; letter-spacing: 1px;'>{code}</p>
-                                        <div style='color: #191919; font-size: 11px;'>
-                                            <p>If you did not request this code, it is possible that someone else is trying to access your account.</p>
-                                        </div>
-                                    </div>
-                                    <div style='color: #191919; text-align: center; font-size: 11px;'>
-                                        <p>© Silicon, Sveavagen 1, SE-123 45 Stockholm, Sweden</p>
+                    <html lang='en'>
+                        <head>
+                            <meta charset='UTF-8'>
+                            <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+                            <title>Verification Code</title>
+                        </head>
+                        <body>
+                            <div style='color: #191919; max-width: 500px;'>
+                                <div style='background-color: #4F85F6; color: white; text-align: center; padding: 20px 0;'>
+                                    <h1 style='font-weight: 600;'>Verification Code</h1>
+                                </div>
+                                <div style='background-color: #F0F0F0; padding: 1rem 2rem;'>
+                                    <p>Dear user,</p>
+                                    <p>We received a request to sign in to your account using e-mail {verificationRequest.Email}.</p>
+                                    <p class='code' style='font-weight: 700; text-align: center; font-size: 48px; letter-spacing: 1px;'>{code}</p>
+                                    <div style='color: #191919; font-size: 11px;'>
+                                        <p>If you did not request this code, it is possible that someone else is trying to access your account.</p>
                                     </div>
                                 </div>
-                            </body>
-                            </html>
-                        ",
-
+                                <div style='color: #191919; text-align: center; font-size: 11px;'>
+                                    <p>© Silicon, Sveavagen 1, SE-123 45 Stockholm, Sweden</p>
+                                </div>
+                            </div>
+                        </body>
+                    </html>
+                   ",
                     PlainText = $"Please verify your account using this verification code: {code}."
-
                 };
 
                 return emailRequest;
@@ -149,5 +152,4 @@ public class VerificationService(ILogger<VerificationService> logger, IServicePr
 
         return null!;
     }
-
 }

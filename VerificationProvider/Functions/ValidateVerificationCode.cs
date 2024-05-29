@@ -42,7 +42,4 @@ public class ValidateVerificationCode
 
         return new UnauthorizedResult();
     }
-
-
-
 }
